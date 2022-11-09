@@ -1,4 +1,5 @@
 import './css/styles.css';
+import Notiflix from 'notiflix';
 let debounce = require('lodash.debounce'); 
 
 const DEBOUNCE_DELAY = 300;
@@ -9,14 +10,23 @@ const countiesList = document.querySelector(".country-list");
 fetchCountryInp.addEventListener("input", debounce(() => {
   fetchCountries()
     .then((countries) => renderUserList(countries))
-    .catch((error) => console.log(error));
-  console.log("weqweqqwqwe");
-}, 500)
+    .catch((error) => showError(error));//console.log(error));
+  //console.log("weqweqqwqwe");
+}, 300)
 );
 
+function showError(error) {
+  Notiflix.Notify.failure("Oops, there is no country with that name.");
+}
+
 function fetchCountries() {
+  let keysForSearch = fetchCountryInp.value.trim()
+  if ( keysForSearch=== "") {
+    countiesList.innerHTML = "";
   
-  return fetch(`https://restcountries.com/v3.1/name/${fetchCountryInp.value}`).then(
+  }
+
+  return fetch(`https://restcountries.com/v3.1/name/${fetchCountryInp.value.trim()}`).then(
     (response) => {
       if (!response.ok) {
         throw new Error(response.status);
@@ -28,7 +38,14 @@ function fetchCountries() {
 
 function renderUserList(countries) {
     
-    
+  if (countries.length >= 10) {
+    Notiflix.Notify.info("Too many matches found. Please enter a more specific name.");
+    countiesList.innerHTML = "";
+  } else if (countries.length === 0){
+    Notiflix.Notify.error("Oops, there is no country with that name.");
+    countiesList.innerHTML = "";
+   
+  } else  {
     const markup = countries
         .map((country) => {
         let leng ="";
@@ -37,20 +54,25 @@ function renderUserList(countries) {
                 leng += country.languages[i]+ "\n";
             }
         };
-        return `<li>
-            <img class="gallery__image" src="${country.flags.png}" width= 30px height= 20px alt="" /><a>${country.name.official}</a>
-            <p><b>столиця</b>: ${country.capital}</p>
-            <p><b>населення</b>: ${country.population }</p>
-            <p><a href="${country.flags.svg}">посилання на зображення прапора</a></p>
-            <a class="gallery__item" >
-            <img class="gallery__image" src="${country.flags.svg}" alt="Image description" />
-            </a>
-            <p><b>мови</b>: ${leng}</p>
+          if (countries.length === 1) {
+          
+            return `<li>
+              <img class="gallery__image" src="${country.flags.png}" width= 30px height= 20px alt="" /><a>${country.name.official}</a>
+              <p><b>столиця</b>: ${country.capital}</p>
+              <p><b>населення</b>: ${country.population}</p>
+              <p><a href="${country.flags.svg}">посилання на зображення прапора</a></p>
+              <p><b>мови</b>: ${leng}</p>
 
             </li>`;
+          } else {
+            return `<li>
+              <img class="gallery__image" src="${country.flags.png}" width= 30px height= 20px alt="" /><a>${country.name.official}</a>
+              </li>`;
+          }
     })
     .join("");
-  countiesList.innerHTML = markup;
+    countiesList.innerHTML = markup;
+  }
 }
 
 let country = 'po'

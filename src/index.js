@@ -1,13 +1,15 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
 let debounce = require('lodash.debounce'); 
+import  * as FC from './fetchCountries.js';
 
 const DEBOUNCE_DELAY = 300;
 
-class Countries {
+class Countries extends FC.default{
 
   constructor() {  
-    this.fetchCountryInp = document.querySelector("input");
+    super(FC.fetchCountryInp);
+    //this.fetchCountryInp = document.querySelector("input");
     this.countiesList = document.querySelector(".country-list");
   }
   
@@ -16,21 +18,9 @@ class Countries {
   }
 
   fetchCountries() {
-    let keysForSearch = this.fetchCountryInp.value.trim()
-    if ( keysForSearch=== "") {
-      this.countiesList.innerHTML = "";
-    
-    }
-
-    return fetch(`https://restcountries.com/v3.1/name/${this.fetchCountryInp.value.trim()}`).then(
-      (response) => {
-        if (!response.ok) {
-          throw new Error(response.status);
-        }
-        return response.json();
-      }
-    );
+    super.fetchCountries();
   }
+
 
   renderUserList(countries) {
     
@@ -73,10 +63,12 @@ class Countries {
 
   init() {
     this.fetchCountryInp.addEventListener("input", debounce(() => {
-      this.fetchCountries()
-        .then((countries) => this.renderUserList(countries))
-        .catch((error) => this.showError(error));//console.log(error));
-      
+      let inputValue = this.fetchCountryInp.value.trim();
+      if (inputValue !== "") {
+        super.fetchCountries(`https://restcountries.com/v3.1/name/${inputValue}`)
+          .then((countries) => this.renderUserList(countries))
+          .catch((error) => this.showError(error));//console.log(error));
+      };
     }, DEBOUNCE_DELAY)
     );
   }

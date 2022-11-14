@@ -1,7 +1,8 @@
- export default class FetchCountries {
-  
+ export  class FetchCountries {
+   static fetchCountryInp;
    constructor() {
-    this.fetchCountryInp = document.querySelector("input");
+     this.fetchCountryInp = document.querySelector("input");
+     this.countiesList = document.querySelector(".country-list");
   }
    
   fetchCountries(name) {
@@ -25,5 +26,5 @@
   
 }
 
- let fetchCountries = new FetchCountries();
+ //let fetchCountries = new FetchCountries();
 //et a = 0;

@@ -1,16 +1,17 @@
 import './css/styles.css';
 import Notiflix from 'notiflix';
 let debounce = require('lodash.debounce'); 
-import  * as FC from './fetchCountries.js';
+import * as fc from './fetchCountries.js';
 
 const DEBOUNCE_DELAY = 300;
 
-class Countries extends FC.default{
+class Countries extends fc.FetchCountries {
 
   constructor() {  
-    super(FC.fetchCountryInp);
-    //this.fetchCountryInp = document.querySelector("input");
-    this.countiesList = document.querySelector(".country-list");
+    super(fc.FetchCountries.fetchCountryInp);
+   // super(fc.countiesList);
+    this.fetchCountryInp = document.querySelector("input");
+    
   }
   
   showError(error) {
@@ -83,4 +84,4 @@ countries.init();
  function test(){
      fetch(`https://restcountries.com/v3.1/name/${country}`).then(response => response.json()).then(data => console.log(data))
  }
- test()*//
+ test()*/
